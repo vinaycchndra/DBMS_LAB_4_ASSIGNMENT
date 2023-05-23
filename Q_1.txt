@@ -1,0 +1,5 @@
+select count(cus_id),cus_gender from (
+select * from 
+(select c.cus_name ,c.cus_gender ,o.* from customer c
+inner join `order` o
+on c.cus_id=o.cus_id where o.ord_amount>=3000) as new_table group by o.cus_id) as new_table2 group by cus_gender;
