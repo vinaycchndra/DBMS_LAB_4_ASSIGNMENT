@@ -1,0 +1,19 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `MyStoredProceduer`()
+BEGIN
+select s.supp_id,s.supp_name,r_o_sp.rat_id,avg(r_o_sp.rat_ratstars) as AvgRat,
+CASE
+	WHEN AVG(r_o_sp.rat_ratstars) = 5 THEN 'Excellent Service'
+	WHEN AVG(r_o_sp.rat_ratstars) > 4 THEN 'Good Service'    
+	WHEN AVG(r_o_sp.rat_ratstars) > 2 THEN 'Average Service'    
+    ELSE 'Poor Service'
+END As 'TypeOfService'
+from supplier s
+inner join
+(select sp.supp_id,r_o.* from supplier_pricing sp
+inner join
+(select r.rat_id,r.rat_ratstars ,o.* from rating r
+inner join `order` o
+on r.ord_id=o.ord_id ) as r_o
+on sp.pricing_id = r_o.pricing_id) as r_o_sp 
+on r_o_sp.supp_id=s.supp_id group by s.supp_id;
+END
